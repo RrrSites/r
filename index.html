@@ -4,9 +4,17 @@
 <meta charset="utf-8">
 <title>Redirecting...</title>
 <script>
-  var u = new URLSearchParams(location.search).get("u");
-  if (u) {
-    location.replace(u);
+  var id = new URLSearchParams(location.search).get("id");
+  if (id) {
+    fetch("links.json?v=" + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (map) {
+        var dest = map[id];
+        if (dest) {
+          location.replace(dest);
+        }
+      })
+      .catch(function () {});
   }
 </script>
 </head>
