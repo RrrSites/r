@@ -5,17 +5,27 @@
 <title>Redirecting...</title>
 <script>
   var id = new URLSearchParams(location.search).get("id");
-  if (id) {
-    fetch("links.json?v=" + Date.now())
+
+  function tryRedirect(attemptsLeft) {
+    if (!id) return;
+    fetch("links.json?v=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (map) {
         var dest = map[id];
         if (dest) {
           location.replace(dest);
+        } else if (attemptsLeft > 0) {
+          setTimeout(function () { tryRedirect(attemptsLeft - 1); }, 2000);
         }
       })
-      .catch(function () {});
+      .catch(function () {
+        if (attemptsLeft > 0) {
+          setTimeout(function () { tryRedirect(attemptsLeft - 1); }, 2000);
+        }
+      });
   }
+
+  tryRedirect(10);
 </script>
 </head>
 <body></body>
